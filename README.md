@@ -12,9 +12,10 @@
 - Подсчёт потребления воды от двух водосчётчиков
 - Установка значений счётчиков и тарифов
 - Включение/отключения дисплея от датчика движения
-- Синхронизация времени с NTP сервером
-- Отправка данных на сервер [Blynk](https://blynk.io/)
-- Отслеживание состояния на смартфоне в приложении Blynk ([iOS](https://apps.apple.com/us/app/blynk-iot-for-arduino-esp32/id808760481), [Android](https://play.google.com/store/apps/details?id=cc.blynk&hl=en_US))
+- При подключении к Интернет (можно отключить):
+  - Синхронизация времени с NTP сервером 
+  - Отправка данных на сервер [Blynk](https://blynk.io/)
+  - Отслеживание состояния на смартфоне в приложении Blynk ([iOS](https://apps.apple.com/us/app/blynk-iot-for-arduino-esp32/id808760481), [Android](https://play.google.com/store/apps/details?id=cc.blynk&hl=en_US))
 
 ## Режимы экрана
 
@@ -29,17 +30,17 @@
 ## Компоненты
 - ESP
 - OLED SSD1306 128x64
-- TTP226
-- PIR
-- RTC
+- TTP223
+- [PIR Motion Sensor](https://robotdyn.com/pir-motion-sensor.html)
+- [RTC (Real Time Clock) DS1307](https://robotdyn.com/rtc-real-time-clock-ds1307-module.html)
 
 ## Схемы
 
 ## Библиотеки
 
-- [BlynkSimpleEsp8266.h]
-- [ESP8266WiFi.h]
+- [BlynkSimpleEsp8266](https://github.com/blynkkk/blynk-library)
+- [ESP8266WiFi.h](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WiFi)
 - [RTClib.h]
-- [SSD1306Wire.h]
+- [SSD1306Wire](https://github.com/ThingPulse/esp8266-oled-ssd1306)
 - [NTPClient.h]
 - [GyverButton](https://github.com/AlexGyver/GyverLibs/tree/master/GyverButton) - работа с кнопками.
