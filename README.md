@@ -28,7 +28,7 @@
 |**Screen 4**||Версия. Год|Установка тарифа <br /> отвода воды|
 
 ## Компоненты
-- LOLIN D1 Mini V3.1.0
+- [LOLIN D1 Mini V3.1.0](https://www.wemos.cc/en/latest/d1/d1_mini.html)
 - OLED SSD1306 128x64
 - TTP223
 - [PIR Motion Sensor](https://robotdyn.com/pir-motion-sensor.html)
