@@ -33,12 +33,14 @@
 - Контроллер [LOLIN D1 Mini V3.1.0](https://www.wemos.cc/en/latest/d1/d1_mini.html)
 - Дисплей OLED SSD1306 128x64
 - Сенсорные кнопки TTP223
-- Пирлоэлектрический датчик движения [PIR Motion Sensor](https://robotdyn.com/pir-motion-sensor.html)
+- Пироэлектрический датчик движения [PIR Motion Sensor](https://robotdyn.com/pir-motion-sensor.html)
 - Часы реального времени [RTC (Real Time Clock) DS1307](https://robotdyn.com/rtc-real-time-clock-ds1307-module.html)
 
 ## Схемы
 В формате [Fritzing](https://fritzing.org/) - [watercounter.fzz](https://github.com/killadog/WaterCounter/tree/main/img/watercounter.fzz)
 <img src="img/watercounter_02.png">
+
+В формате [Sprint Layout]() - []()
 
 ## Библиотеки
 
