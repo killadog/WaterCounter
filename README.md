@@ -38,7 +38,7 @@
 
 ## Схемы
 
-<img src="img/water_counter_02.png">
+<img src="img/watercounter_02.png">
 
 ## Библиотеки
 
