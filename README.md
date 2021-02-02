@@ -38,6 +38,8 @@
 
 ## Схемы
 
+<img src="img/water_counter_02.png">
+
 ## Библиотеки
 
 - [BlynkSimpleEsp8266](https://github.com/blynkkk/blynk-library)
