@@ -37,7 +37,7 @@
 - Часы реального времени [RTC (Real Time Clock) DS1307](https://robotdyn.com/rtc-real-time-clock-ds1307-module.html)
 
 ## Схемы
-В формате [Fritzing](https://fritzing.org/) - [watercounter_02.fzz](https://github.com/killadog/WaterCounter/tree/main/img/watercounter_02.fzz)
+В формате [Fritzing](https://fritzing.org/) - [watercounter.fzz](https://github.com/killadog/WaterCounter/tree/main/img/watercounter_02.fzz)
 <img src="img/watercounter_02.png">
 
 ## Библиотеки
