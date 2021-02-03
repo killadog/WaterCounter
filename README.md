@@ -2,7 +2,7 @@
 
 # Водосчётчик
 
-<img valign="middle" src="img/Watercounter_01.png"><img valign="middle" src="img/arrow-icon-right.png">
+<img valign="middle" src="img/Watercounter_01.png"> <img valign="middle" src="img/arrow-icon-right.png">
 
 - [Возможности](https://github.com/killadog/WaterCounter/blob/main/README.md#%D0%B2%D0%BE%D0%B7%D0%BC%D0%BE%D0%B6%D0%BD%D0%BE%D1%81%D1%82%D0%B8)
 - [Режимы экрана](https://github.com/killadog/WaterCounter/blob/main/README.md#%D1%80%D0%B5%D0%B6%D0%B8%D0%BC%D1%8B-%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0)
