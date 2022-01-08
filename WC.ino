@@ -39,19 +39,19 @@
 #include <SSD1306Wire.h>
 #include <NTPClient.h>
 #include <GyverButton.h> //Работа с кнопками https://github.com/AlexGyver/GyverLibs/tree/master/GyverButton
-#include "config.h"
+#include "config.h"      //Пароли берутся из этого файла
 
 const char ssid[] = WIFI_SSID;     //Access point
 const char pass[] = WIFI_PASSWORD; //пароль
-const char auth[] = BLYNK_ID;      //Blynk
+const char auth[] = BLYNK_ID;      //Blynk ID
 
 #define SCL_PIN 5     //пин SCL           D1
 #define SDA_PIN 4     //пин SDA           D2
 #define COLD_PIN 2    //пин COLD          D4
 #define HOT_PIN 0     //пин HOT           D3
 #define SELECT_PIN 12 //пин кнопки SELECT D6
-#define PLUS_PIN 13   //пин +             D7
-#define MINUS_PIN 14  //пин -             D5
+#define PLUS_PIN 13   //пин кнопки +      D7
+#define MINUS_PIN 14  //пин кнопки -      D5
 #define PIR_PIN 16    //пин датчика PIR   D0
 
 #define COUNTERS 2                                    //количество счётчиков
@@ -67,9 +67,9 @@ uint8_t Today; //число сегодняшнего дня
 float TARIFF[TARIFFS] = {42.30, 198.19, 30.90};                          //значения тарифов (холодная, горячая, водоотвод)
 char *TariffName[TARIFFS] = {"TARIFF COLD", "TARIFF HOT", "TARIFF OUT"}; //названия тарифов
 
-boolean PIR_FLAG = 1;             //флаг включения экрана
-uint32_t PIR_TIMER = millis();    //стартовое время подсветки экрана
-uint32_t DISPALY_ON_TIME = 30000; //время подсветки экрана
+boolean PIR_FLAG = 1;             //флаг включенного экрана
+uint32_t PIR_TIMER = millis();    //стартовое время начала подсветки экрана
+uint32_t DISPALY_ON_TIME = 30000; //длительность подсветки экрана в мс
 
 #define MODES 3                 //количество MODES
 uint8_t SCREENS[3] = {3, 5, 5}; //количество SCREENS в каждом MODE
@@ -79,7 +79,7 @@ uint8_t SCREEN_NUMBER = 0;      //начальный SCREEN
 uint32_t START_TIME = 0;  //стартовое время для аптайма
 boolean SETTING_MODE = 0; //режим корректировки
 
-uint32_t PLUS_MINUS_TIME = 0; //стартовое время нажатия плюс/минуса
+uint32_t PLUS_MINUS_TIME = 0; //стартовое время нажатия кнопки плюс/минус
 
 RTC_DS1307 rtc;
 DateTime start_time;
@@ -184,7 +184,7 @@ void loop()
 
 void CHECK_PIR()
 {
-  boolean SENSOR_VALUE = digitalRead(PIR_PIN); // читаем значение от датчика
+  boolean SENSOR_VALUE = digitalRead(PIR_PIN); // читаем значение от PIR датчика
   if ((SENSOR_VALUE) && (!PIR_FLAG))           // если что-то двигается
   {
     display.displayOn();
@@ -226,7 +226,7 @@ void CHECK_PIR()
     PIR_FLAG = 0; //флаг что дисплей ВЫКЛючен
     CLOCK_TO_SERIAL();
     Serial.println(F("Display is OFF"));
-    PIR_TIMER = millis(); //для информации через сколько ВКЛючится
+    PIR_TIMER = millis(); //для информации через сколько ВКЛючился
   }
 }
 

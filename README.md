@@ -15,7 +15,7 @@
 - Установка значений счётчиков и тарифов.
 - Включение/отключения дисплея от датчика движения.
 - Вывод информации в Serial.
-- При подключении к Интернет (можно отключить):
+- При подключении к Интернет:
   - Синхронизация времени с NTP сервером; 
   - Отправка данных на сервер [Blynk](https://blynk.io/);
   - Отслеживание состояния на смартфоне в приложении Blynk ([iOS](https://apps.apple.com/us/app/blynk-iot-for-arduino-esp32/id808760481), [Android](https://play.google.com/store/apps/details?id=cc.blynk&hl=en_US)).
@@ -33,7 +33,7 @@
 ## Компоненты
 - Контроллер [LOLIN D1 Mini V3.1.0](https://www.wemos.cc/en/latest/d1/d1_mini.html)
 - Дисплей OLED SSD1306 128x64
-- Сенсорные кнопки TTP223
+- Кнопки
 - Пироэлектрический датчик движения [PIR Motion Sensor](https://robotdyn.com/pir-motion-sensor.html)
 - Часы реального времени [RTC (Real Time Clock) DS1307](https://robotdyn.com/rtc-real-time-clock-ds1307-module.html)
 
