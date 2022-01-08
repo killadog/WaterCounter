@@ -55,7 +55,7 @@ const char auth[] = BLYNK_ID;                                       //Blynk
 #define PIR_PIN                     16                              //пин датчика PIR   D0
 
 #define COUNTERS                    2                               //количество счётчиков
-float COUNTER_ALL_TIME[COUNTERS]    = {1408.10, 816.10};            //начальные значения счётчиков
+float COUNTER_ALL_TIME[COUNTERS]    = {1408.18, 816.10};            //начальные значения счётчиков
 char* CounterName[COUNTERS]         = {"COLD", "HOT"};              //названия счётчиков
 
 #define Days_To_Remember           7                                //количество дней для отображения
