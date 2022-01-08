@@ -38,48 +38,48 @@
 #include <RTClib.h>
 #include <SSD1306Wire.h>
 #include <NTPClient.h>
-#include <GyverButton.h>                //Работа с кнопками https://github.com/AlexGyver/GyverLibs/tree/master/GyverButton
+#include <GyverButton.h> //Работа с кнопками https://github.com/AlexGyver/GyverLibs/tree/master/GyverButton
 #include "config.h"
 
-const char ssid[] = WIFI_SSID;                                      //Access point
-const char pass[] = WIFI_PASSWORD;                                  //пароль
-const char auth[] = BLYNK_ID;                                       //Blynk
+const char ssid[] = WIFI_SSID;     //Access point
+const char pass[] = WIFI_PASSWORD; //пароль
+const char auth[] = BLYNK_ID;      //Blynk
 
-#define SCL_PIN                     5                               //пин SCL           D1
-#define SDA_PIN                     4                               //пин SDA           D2
-#define COLD_PIN                    2                               //пин COLD          D4
-#define HOT_PIN                     0                               //пин HOT           D3
-#define SELECT_PIN                  12                              //пин кнопки SELECT D6
-#define PLUS_PIN                    13                              //пин +             D7
-#define MINUS_PIN                   14                              //пин -             D5
-#define PIR_PIN                     16                              //пин датчика PIR   D0
+#define SCL_PIN 5     //пин SCL           D1
+#define SDA_PIN 4     //пин SDA           D2
+#define COLD_PIN 2    //пин COLD          D4
+#define HOT_PIN 0     //пин HOT           D3
+#define SELECT_PIN 12 //пин кнопки SELECT D6
+#define PLUS_PIN 13   //пин +             D7
+#define MINUS_PIN 14  //пин -             D5
+#define PIR_PIN 16    //пин датчика PIR   D0
 
-#define COUNTERS                    2                               //количество счётчиков
-float COUNTER_ALL_TIME[COUNTERS]    = {1408.15, 816.10};            //начальные значения счётчиков
-char* CounterName[COUNTERS]         = {"COLD", "HOT"};              //названия счётчиков
+#define COUNTERS 2                                    //количество счётчиков
+float COUNTER_ALL_TIME[COUNTERS] = {1408.15, 816.10}; //начальные значения счётчиков
+char *CounterName[COUNTERS] = {"COLD", "HOT"};        //названия счётчиков
 
-#define Days_To_Remember           7                                //количество дней для отображения
-uint16_t Counter_Day[COUNTERS][Days_To_Remember];                   //массив со значениями за каждый день
+#define Days_To_Remember 7                        //количество дней для отображения
+uint16_t Counter_Day[COUNTERS][Days_To_Remember]; //массив со значениями за каждый день
 
-uint8_t Today;                                                      //число сегодняшнего дня
+uint8_t Today; //число сегодняшнего дня
 
-#define TARIFFS                3                                    //количество тарифов
-float TARIFF[TARIFFS]          = {42.30, 198.19, 30.90};            //значения тарифов (холодная, горячая, водоотвод)
-char* TariffName[TARIFFS]      = {"TARIFF COLD", "TARIFF HOT", "TARIFF OUT"}; //названия тарифов
+#define TARIFFS 3                                                        //количество тарифов
+float TARIFF[TARIFFS] = {42.30, 198.19, 30.90};                          //значения тарифов (холодная, горячая, водоотвод)
+char *TariffName[TARIFFS] = {"TARIFF COLD", "TARIFF HOT", "TARIFF OUT"}; //названия тарифов
 
-boolean PIR_FLAG               = 1;                                 //флаг включения экрана
-uint32_t PIR_TIMER             = millis();                          //стартовое время подсветки экрана
-uint32_t DISPALY_ON_TIME       = 30000;                             //время подсветки экрана
+boolean PIR_FLAG = 1;             //флаг включения экрана
+uint32_t PIR_TIMER = millis();    //стартовое время подсветки экрана
+uint32_t DISPALY_ON_TIME = 30000; //время подсветки экрана
 
-#define MODES                  3                                    //количество MODES
-uint8_t SCREENS[3]             = {3, 5, 5};                         //количество SCREENS в каждом MODE
-uint8_t MODE                   = 0;                                 //начальный MODE
-uint8_t SCREEN_NUMBER          = 0;                                 //начальный SCREEN
+#define MODES 3                 //количество MODES
+uint8_t SCREENS[3] = {3, 5, 5}; //количество SCREENS в каждом MODE
+uint8_t MODE = 0;               //начальный MODE
+uint8_t SCREEN_NUMBER = 0;      //начальный SCREEN
 
-uint32_t START_TIME            = 0;                                 //стартовое время для аптайма
-boolean SETTING_MODE           = 0;                                 //режим корректировки
+uint32_t START_TIME = 0;  //стартовое время для аптайма
+boolean SETTING_MODE = 0; //режим корректировки
 
-uint32_t PLUS_MINUS_TIME       = 0;                                 //стартовое время нажатия плюс/минуса
+uint32_t PLUS_MINUS_TIME = 0; //стартовое время нажатия плюс/минуса
 
 RTC_DS1307 rtc;
 DateTime start_time;
@@ -111,41 +111,46 @@ void setup()
   pinMode(SCL_PIN, INPUT_PULLUP);
   pinMode(PIR_PIN, INPUT);
 
+  pinMode(SELECT_PIN, INPUT_PULLUP);
+  pinMode(PLUS_PIN, INPUT_PULLUP);
+  pinMode(MINUS_PIN, INPUT_PULLUP);
   pinMode(COLD_PIN, INPUT_PULLUP);
   pinMode(HOT_PIN, INPUT_PULLUP);
 
   //pinMode(SELECT_PIN, INPUT_PULLUP);
-  button_select.setDebounce(80);         // настройка антидребезга (по умолчанию 80 мс)
-  button_select.setTimeout(1000);        // настройка таймаута на удержание (по умолчанию 500 мс)
-  button_select.setClickTimeout(300);    // настройка таймаута между кликами (по умолчанию 300 мс)
+  button_select.setDebounce(80);      // настройка антидребезга (по умолчанию 80 мс)
+  button_select.setTimeout(1000);     // настройка таймаута на удержание (по умолчанию 500 мс)
+  button_select.setClickTimeout(300); // настройка таймаута между кликами (по умолчанию 300 мс)
 
   //pinMode(PLUS_PIN, INPUT_PULLUP);
-  button_plus.setDebounce(80);           // настройка антидребезга (по умолчанию 80 мс)
-  button_plus.setTimeout(500);           // настройка таймаута на удержание (по умолчанию 500 мс)
-  button_plus.setClickTimeout(300);      // настройка таймаута между кликами (по умолчанию 300 мс)
-  button_plus.setStepTimeout(100);       // установка таймаута между инкрементами (по умолчанию 400 мс)
+  button_plus.setDebounce(80);      // настройка антидребезга (по умолчанию 80 мс)
+  button_plus.setTimeout(500);      // настройка таймаута на удержание (по умолчанию 500 мс)
+  button_plus.setClickTimeout(300); // настройка таймаута между кликами (по умолчанию 300 мс)
+  button_plus.setStepTimeout(100);  // установка таймаута между инкрементами (по умолчанию 400 мс)
 
   //pinMode(MINUS_PIN, INPUT_PULLUP);
-  button_minus.setDebounce(80);           // настройка антидребезга (по умолчанию 80 мс)
-  button_minus.setTimeout(500);           // настройка таймаута на удержание (по умолчанию 500 мс)
-  button_minus.setClickTimeout(300);      // настройка таймаута между кликами (по умолчанию 300 мс)
-  button_minus.setStepTimeout(100);       // установка таймаута между инкрементами (по умолчанию 400 мс)
+  button_minus.setDebounce(80);      // настройка антидребезга (по умолчанию 80 мс)
+  button_minus.setTimeout(500);      // настройка таймаута на удержание (по умолчанию 500 мс)
+  button_minus.setClickTimeout(300); // настройка таймаута между кликами (по умолчанию 300 мс)
+  button_minus.setStepTimeout(100);  // установка таймаута между инкрементами (по умолчанию 400 мс)
 
-  Serial.begin(115200);                   //вывод в Serial
+  Serial.begin(115200); //вывод в Serial
 
   WiFi.begin(ssid, pass);
   Serial.println();
   Serial.println(F("Connecting to WiFi"));
-  while (WiFi.status() != WL_CONNECTED) {
-    delay (500);
-    Serial.print (F("."));
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(F("."));
   }
   Serial.println();
 
   if (!rtc.begin())
   {
     Serial.println(F("Couldn't find RTC"));
-    while (1);
+    while (1)
+      ;
   }
   if (!rtc.isrunning())
   {
@@ -153,7 +158,7 @@ void setup()
   }
 
   timeClient.begin();
-  timeClient.setTimeOffset(10800);                             //Moscow timezone
+  timeClient.setTimeOffset(10800); //Moscow timezone
 
   NTP_RTC();
 
@@ -179,8 +184,8 @@ void loop()
 
 void CHECK_PIR()
 {
-  boolean SENSOR_VALUE = digitalRead(PIR_PIN);                   // читаем значение от датчика
-  if ((SENSOR_VALUE) && (!PIR_FLAG))                             // если что-то двигается
+  boolean SENSOR_VALUE = digitalRead(PIR_PIN); // читаем значение от датчика
+  if ((SENSOR_VALUE) && (!PIR_FLAG))           // если что-то двигается
   {
     display.displayOn();
     PIR_FLAG = 1;
@@ -193,32 +198,35 @@ void CHECK_PIR()
     {
       DIFF_TIME = DIFF_TIME / 86400;
       UNIT = " days";
-    } else if (DIFF_TIME >= 3600)
+    }
+    else if (DIFF_TIME >= 3600)
     {
       DIFF_TIME = DIFF_TIME / 3600;
       UNIT = " hours";
-    } else if (DIFF_TIME >= 60)
+    }
+    else if (DIFF_TIME >= 60)
     {
       DIFF_TIME = DIFF_TIME / 60;
       UNIT = " min";
-    } else
+    }
+    else
     {
       UNIT = " sec";
     }
 
     Serial.print(DIFF_TIME);
     Serial.println(UNIT);
-    PIR_TIMER = millis();                                        //для вычисления через сколько надо ВЫКЛючится
+    PIR_TIMER = millis(); //для вычисления через сколько надо ВЫКЛючится
     SHOW();
   }
 
   if ((PIR_FLAG) && (millis() - PIR_TIMER > DISPALY_ON_TIME))
   {
     display.displayOff();
-    PIR_FLAG = 0;                                                //флаг что дисплей ВЫКЛючен
+    PIR_FLAG = 0; //флаг что дисплей ВЫКЛючен
     CLOCK_TO_SERIAL();
     Serial.println(F("Display is OFF"));
-    PIR_TIMER = millis();                                        //для информации через сколько ВКЛючится
+    PIR_TIMER = millis(); //для информации через сколько ВКЛючится
   }
 }
 
@@ -261,7 +269,8 @@ void CHECK_BUTTONS()
     if (button_select.isSingle())
     {
       SCREEN_NUMBER++;
-      if (SCREEN_NUMBER > SCREENS[MODE] - 1) SCREEN_NUMBER = 0;
+      if (SCREEN_NUMBER > SCREENS[MODE] - 1)
+        SCREEN_NUMBER = 0;
       CLOCK_TO_SERIAL();
       Serial.print(F("One click.  "));
       MODE_SCREEN_TO_SERIAL();
@@ -270,7 +279,8 @@ void CHECK_BUTTONS()
     if (button_select.isDouble())
     {
       MODE++;
-      if (MODE >= MODES - 1) MODE = 0;
+      if (MODE >= MODES - 1)
+        MODE = 0;
       SCREEN_NUMBER = 0;
       SHOW();
       CLOCK_TO_SERIAL();
@@ -281,7 +291,7 @@ void CHECK_BUTTONS()
     if (button_select.isHolded())
     {
       SETTING_MODE = 1;
-      MODE = MODES - 1;                                      //в режим корректировки значений счётчика
+      MODE = MODES - 1; //в режим корректировки значений счётчика
       SCREEN_NUMBER = 0;
       CLOCK_TO_SERIAL();
       Serial.print(F("Holded.     "));
@@ -295,7 +305,8 @@ void CHECK_BUTTONS()
     if (button_select.isSingle())
     {
       SCREEN_NUMBER++;
-      if (SCREEN_NUMBER > SCREENS[MODE] - 1) SCREEN_NUMBER = 0;
+      if (SCREEN_NUMBER > SCREENS[MODE] - 1)
+        SCREEN_NUMBER = 0;
       CLOCK_TO_SERIAL();
       Serial.print(F("One click.  "));
       MODE_SCREEN_TO_SERIAL();
@@ -325,8 +336,10 @@ void CHECK_BUTTONS()
     }
 
     button_plus.tick();
-    if (button_plus.isPress()) PLUS_MINUS_TIME = millis();
-    if (button_plus.isClick()) COUNTER_ALL_TIME[SCREEN_NUMBER] += 0.01;
+    if (button_plus.isPress())
+      PLUS_MINUS_TIME = millis();
+    if (button_plus.isClick())
+      COUNTER_ALL_TIME[SCREEN_NUMBER] += 0.01;
     if (button_plus.isStep())
     {
       if (SCREEN_NUMBER == 0 || SCREEN_NUMBER == 1)
@@ -334,22 +347,27 @@ void CHECK_BUTTONS()
         if (millis() - PLUS_MINUS_TIME > 3000)
         {
           COUNTER_ALL_TIME[SCREEN_NUMBER] += 1;
-        } else if (millis() - PLUS_MINUS_TIME > 1000)
+        }
+        else if (millis() - PLUS_MINUS_TIME > 1000)
         {
           COUNTER_ALL_TIME[SCREEN_NUMBER] += 0.1;
-        } else
+        }
+        else
         {
           COUNTER_ALL_TIME[SCREEN_NUMBER] += 0.01;
         }
-      } else
+      }
+      else
       {
         if (millis() - PLUS_MINUS_TIME > 3000)
         {
           TARIFF[SCREEN_NUMBER - 2] += 1;
-        } else if (millis() - PLUS_MINUS_TIME > 1000)
+        }
+        else if (millis() - PLUS_MINUS_TIME > 1000)
         {
           TARIFF[SCREEN_NUMBER - 2] += 0.1;
-        } else
+        }
+        else
         {
           TARIFF[SCREEN_NUMBER - 2] += 0.01;
         }
@@ -357,8 +375,10 @@ void CHECK_BUTTONS()
     }
 
     button_minus.tick();
-    if (button_minus.isPress()) PLUS_MINUS_TIME = millis();
-    if (button_minus.isClick()) COUNTER_ALL_TIME[SCREEN_NUMBER] -= 0.01;
+    if (button_minus.isPress())
+      PLUS_MINUS_TIME = millis();
+    if (button_minus.isClick())
+      COUNTER_ALL_TIME[SCREEN_NUMBER] -= 0.01;
     if (button_minus.isStep())
     {
       if (SCREEN_NUMBER == 0 || SCREEN_NUMBER == 1)
@@ -366,29 +386,35 @@ void CHECK_BUTTONS()
         if (millis() - PLUS_MINUS_TIME > 3000)
         {
           COUNTER_ALL_TIME[SCREEN_NUMBER] -= 1;
-        } else if (millis() - PLUS_MINUS_TIME > 1000)
+        }
+        else if (millis() - PLUS_MINUS_TIME > 1000)
         {
           COUNTER_ALL_TIME[SCREEN_NUMBER] -= 0.1;
-        } else
+        }
+        else
         {
           COUNTER_ALL_TIME[SCREEN_NUMBER] -= 0.01;
         }
-      } else
+      }
+      else
       {
         if (millis() - PLUS_MINUS_TIME > 3000)
         {
           TARIFF[SCREEN_NUMBER - 2] -= 1;
-        } else if (millis() - PLUS_MINUS_TIME > 1000)
+        }
+        else if (millis() - PLUS_MINUS_TIME > 1000)
         {
           TARIFF[SCREEN_NUMBER - 2] -= 0.1;
-        } else
+        }
+        else
         {
           TARIFF[SCREEN_NUMBER - 2] -= 0.01;
         }
       }
     }
 
-    if (button_plus.isHold() || button_minus.isHold()) SHOW();
+    if (button_plus.isHold() || button_minus.isHold())
+      SHOW();
   }
 }
 
@@ -396,40 +422,40 @@ void SCREEN_0()
 {
   switch (MODE)
   {
-    case 0:
-      CLOCK_TO_DISPLAY();
-      for (uint8_t i = 0; i < COUNTERS; i++)
-      {
-        COUNTER_TO_DISPLAY(i);
-      }
-      break;
-    case 1:
-      float IN;
-      float OUT;
-      float COST;
+  case 0:
+    CLOCK_TO_DISPLAY();
+    for (uint8_t i = 0; i < COUNTERS; i++)
+    {
+      COUNTER_TO_DISPLAY(i);
+    }
+    break;
+  case 1:
+    float IN;
+    float OUT;
+    float COST;
 
-      display.setFont(ArialMT_Plain_16);
-      for (uint8_t i = 0; i < COUNTERS; i++)
-      {
-        IN = Counter_Day[i][0] * (TARIFF[i] / 1000);
-        OUT = Counter_Day[i][0] * (TARIFF[2] / 1000);
-        COST = IN + OUT;
+    display.setFont(ArialMT_Plain_16);
+    for (uint8_t i = 0; i < COUNTERS; i++)
+    {
+      IN = Counter_Day[i][0] * (TARIFF[i] / 1000);
+      OUT = Counter_Day[i][0] * (TARIFF[2] / 1000);
+      COST = IN + OUT;
 
-        display.setTextAlignment(TEXT_ALIGN_CENTER);
-        display.drawString(i * 64 + 32, 0, String(COST));
-        display.drawHorizontalLine(0, 20, 128);
-        display.drawString(i * 64 + 32, 24, String(IN));
-        display.drawString(i * 64 + 32, 48, String(OUT));
-        display.setTextAlignment(TEXT_ALIGN_LEFT);
-        display.drawString(i * 64 + 1, 36, String(" + "));
-      }
-      break;
-    case 2:
-      display.setFont(ArialMT_Plain_16);
       display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64, 0, String(CounterName[SCREEN_NUMBER]));
-      display.drawString(64, 32, String(COUNTER_ALL_TIME[SCREEN_NUMBER]));
-      break;
+      display.drawString(i * 64 + 32, 0, String(COST));
+      display.drawHorizontalLine(0, 20, 128);
+      display.drawString(i * 64 + 32, 24, String(IN));
+      display.drawString(i * 64 + 32, 48, String(OUT));
+      display.setTextAlignment(TEXT_ALIGN_LEFT);
+      display.drawString(i * 64 + 1, 36, String(" + "));
+    }
+    break;
+  case 2:
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, String(CounterName[SCREEN_NUMBER]));
+    display.drawString(64, 32, String(COUNTER_ALL_TIME[SCREEN_NUMBER]));
+    break;
   }
 }
 
@@ -437,51 +463,51 @@ void SCREEN_1()
 {
   switch (MODE)
   {
-    case 0:
-      CHART(0);
-      break;
-    case 1:
-      display.setFont(ArialMT_Plain_16);
-      display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64 , 0, "TARIFF");
-      display.setTextAlignment(TEXT_ALIGN_LEFT);
-      display.drawString(0 , 16, "COLD");
-      display.drawString(0 , 32, "HOT");
-      display.drawString(0 , 48, "OUT");
-      display.setTextAlignment(TEXT_ALIGN_RIGHT);
-      display.drawString(128 , 16, String(TARIFF[0]));
-      display.drawString(128 , 32, String(TARIFF[1]));
-      display.drawString(128 , 48, String(TARIFF[2]));
-      break;
-    case 2:
-      display.setFont(ArialMT_Plain_16);
-      display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64, 0, String(CounterName[SCREEN_NUMBER]));
-      display.drawString(64, 32, String(COUNTER_ALL_TIME[SCREEN_NUMBER]));
-      break;
+  case 0:
+    CHART(0);
+    break;
+  case 1:
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, "TARIFF");
+    display.setTextAlignment(TEXT_ALIGN_LEFT);
+    display.drawString(0, 16, "COLD");
+    display.drawString(0, 32, "HOT");
+    display.drawString(0, 48, "OUT");
+    display.setTextAlignment(TEXT_ALIGN_RIGHT);
+    display.drawString(128, 16, String(TARIFF[0]));
+    display.drawString(128, 32, String(TARIFF[1]));
+    display.drawString(128, 48, String(TARIFF[2]));
+    break;
+  case 2:
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, String(CounterName[SCREEN_NUMBER]));
+    display.drawString(64, 32, String(COUNTER_ALL_TIME[SCREEN_NUMBER]));
+    break;
   }
 }
 void SCREEN_2()
 {
   switch (MODE)
   {
-    case 0:
-      CHART(1);
-      break;
-    case 1:
-      display.setFont(ArialMT_Plain_16);
-      display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64 , 0, WiFi.localIP().toString());
-      display.drawString(64 , 16, WiFi.subnetMask().toString());
-      display.drawString(64 , 32, WiFi.gatewayIP().toString());
-      display.drawString(64 , 48, WiFi.hostname());
-      break;
-    case 2:
-      display.setFont(ArialMT_Plain_16);
-      display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64, 0, String(TariffName[0]));
-      display.drawString(64, 32, String(TARIFF[0]));
-      break;
+  case 0:
+    CHART(1);
+    break;
+  case 1:
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, WiFi.localIP().toString());
+    display.drawString(64, 16, WiFi.subnetMask().toString());
+    display.drawString(64, 32, WiFi.gatewayIP().toString());
+    display.drawString(64, 48, WiFi.hostname());
+    break;
+  case 2:
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, String(TariffName[0]));
+    display.drawString(64, 32, String(TARIFF[0]));
+    break;
   }
 }
 
@@ -489,40 +515,43 @@ void SCREEN_3()
 {
   switch (MODE)
   {
-    case 1:
-      {
-        display.setFont(ArialMT_Plain_16);
-        display.setTextAlignment(TEXT_ALIGN_CENTER);
-        display.drawString(64 , 0, "UPTIME");
-        display.drawString(64 , 16, "");
-        int DIFF_TIME = rtc.now().unixtime() - START_TIME;
-        String UNIT;
-        if (DIFF_TIME >= 86400)
-        {
-          DIFF_TIME = DIFF_TIME / 86400;
-          UNIT = " days";
-        } else if (DIFF_TIME >= 3600)
-        {
-          DIFF_TIME = DIFF_TIME / 3600;
-          UNIT = " hours";
-        } else if (DIFF_TIME >= 60)
-        {
-          DIFF_TIME = DIFF_TIME / 60;
-          UNIT = " min";
-        } else
-        {
-          UNIT = " sec";
-        }
-        display.drawString(64 , 32, String(DIFF_TIME) + UNIT);
-        display.drawString(64 , 48, "");
-      }
-      break;
-    case 2:
-      display.setFont(ArialMT_Plain_16);
-      display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64, 0, String(TariffName[1]));
-      display.drawString(64, 32, String(TARIFF[1]));
-      break;
+  case 1:
+  {
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, "UPTIME");
+    display.drawString(64, 16, "");
+    int DIFF_TIME = rtc.now().unixtime() - START_TIME;
+    String UNIT;
+    if (DIFF_TIME >= 86400)
+    {
+      DIFF_TIME = DIFF_TIME / 86400;
+      UNIT = " days";
+    }
+    else if (DIFF_TIME >= 3600)
+    {
+      DIFF_TIME = DIFF_TIME / 3600;
+      UNIT = " hours";
+    }
+    else if (DIFF_TIME >= 60)
+    {
+      DIFF_TIME = DIFF_TIME / 60;
+      UNIT = " min";
+    }
+    else
+    {
+      UNIT = " sec";
+    }
+    display.drawString(64, 32, String(DIFF_TIME) + UNIT);
+    display.drawString(64, 48, "");
+  }
+  break;
+  case 2:
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, String(TariffName[1]));
+    display.drawString(64, 32, String(TARIFF[1]));
+    break;
   }
 }
 
@@ -530,18 +559,18 @@ void SCREEN_4()
 {
   switch (MODE)
   {
-    case 1:
-      display.setFont(ArialMT_Plain_16);
-      display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64 , 0, "ver. 1.0.0");
-      display.drawString(64 , 32, "2019 - 2022");
-      break;
-    case 2:
-      display.setFont(ArialMT_Plain_16);
-      display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64, 0, String(TariffName[2]));
-      display.drawString(64, 32, String(TARIFF[2]));
-      break;
+  case 1:
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, "ver. 1.0.0");
+    display.drawString(64, 32, "2019 - 2022");
+    break;
+  case 2:
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.drawString(64, 0, String(TariffName[2]));
+    display.drawString(64, 32, String(TARIFF[2]));
+    break;
   }
 }
 
@@ -550,12 +579,23 @@ void SHOW()
   display.clear();
   switch (SCREEN_NUMBER)
   {
-    case 0: SCREEN_0(); break;
-    case 1: SCREEN_1(); break;
-    case 2: SCREEN_2(); break;
-    case 3: SCREEN_3(); break;
-    case 4: SCREEN_4(); break;
-    default: Serial.println(SCREEN_NUMBER);
+  case 0:
+    SCREEN_0();
+    break;
+  case 1:
+    SCREEN_1();
+    break;
+  case 2:
+    SCREEN_2();
+    break;
+  case 3:
+    SCREEN_3();
+    break;
+  case 4:
+    SCREEN_4();
+    break;
+  default:
+    Serial.println(SCREEN_NUMBER);
   }
   display.display();
 }
@@ -634,11 +674,14 @@ void CLOCK_TO_DISPLAY()
   display.setFont(ArialMT_Plain_16);
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   String Clock = "";
-  if (now.hour() < 10) Clock += "0";
+  if (now.hour() < 10)
+    Clock += "0";
   Clock += String(now.hour()) + " : ";
-  if (now.minute() < 10) Clock += "0";
+  if (now.minute() < 10)
+    Clock += "0";
   Clock += String(now.minute()) + " : ";
-  if (now.second() < 10) Clock += "0";
+  if (now.second() < 10)
+    Clock += "0";
   Clock += String(now.second());
   display.drawString(64, 0, String(Clock));
 }
@@ -656,19 +699,24 @@ void CLOCK_TO_SERIAL()
   DateTime now = rtc.now();
   Serial.print(now.year());
   Serial.print(F("."));
-  if (now.month() < 10) Serial.print(0);
+  if (now.month() < 10)
+    Serial.print(0);
   Serial.print(now.month());
   Serial.print(F("."));
-  if (now.day() < 10) Serial.print(0);
+  if (now.day() < 10)
+    Serial.print(0);
   Serial.print(now.day());
   Serial.print(F(" "));
-  if (now.hour() < 10) Serial.print(0);
+  if (now.hour() < 10)
+    Serial.print(0);
   Serial.print(now.hour());
   Serial.print(F(":"));
-  if (now.minute() < 10) Serial.print(0);
+  if (now.minute() < 10)
+    Serial.print(0);
   Serial.print(now.minute());
   Serial.print(F(":"));
-  if (now.second() < 10) Serial.print(0);
+  if (now.second() < 10)
+    Serial.print(0);
   Serial.print(now.second());
   Serial.print(F("  "));
 }
@@ -703,7 +751,8 @@ void CHART(byte COUNTER)
   int16_t Max_Value = 0;
   for (uint8_t i = 0; i < Days_To_Remember; i++)
   {
-    if (Max_Value < Counter_Day[COUNTER][i]) Max_Value = Counter_Day[COUNTER][i];
+    if (Max_Value < Counter_Day[COUNTER][i])
+      Max_Value = Counter_Day[COUNTER][i];
   }
   display.setFont(ArialMT_Plain_10);
   DateTime now = rtc.now();
@@ -712,7 +761,7 @@ void CHART(byte COUNTER)
   {
     uint8_t Bar_Height = map(Counter_Day[COUNTER][i], 0, Max_Value, 0, 36);
     display.fillRect(128 - i * Bar_Width - Bar_Width, 54 - Bar_Height, Bar_Width - 2, Bar_Height);
-    DateTime past (now + TimeSpan(-i, 0, 0, 0));
+    DateTime past(now + TimeSpan(-i, 0, 0, 0));
     display.drawString(128 - i * Bar_Width - Bar_Width / 2 + 6, 54, String(past.day()));
   }
 }
