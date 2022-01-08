@@ -4,7 +4,7 @@
   Компоненты:
   - Контроллер LOLIN D1 Mini V3.1.0
   - Дисплей OLED SSD1306 128x64
-  - Сенсорные кнопки TTP223
+  - Кнопки TTP223
   - Пироэлектрический датчик движения PIR Motion Sensor
   - Часы реального времени RTC (Real Time Clock) DS1307
   - Код, схемы - https://github.com/killadog/WaterCounter
@@ -39,10 +39,11 @@
 #include <SSD1306Wire.h>
 #include <NTPClient.h>
 #include <GyverButton.h>                //Работа с кнопками https://github.com/AlexGyver/GyverLibs/tree/master/GyverButton
+#include "config.h"
 
-char auth[] = "secret_number";                   //Blynk
-char ssid[] = "ssid";                                           //Access point
-char pass[] = "passw0rd";                                           //пароль
+const char ssid[] = WIFI_SSID;                                      //Access point
+const char pass[] = WIFI_PASSWORD;                                  //пароль
+const char auth[] = BLYNK_ID;                                       //Blynk
 
 #define SCL_PIN                     5                               //пин SCL           D1
 #define SDA_PIN                     4                               //пин SDA           D2
@@ -54,31 +55,31 @@ char pass[] = "passw0rd";                                           //парол
 #define PIR_PIN                     16                              //пин датчика PIR   D0
 
 #define COUNTERS                    2                               //количество счётчиков
-float COUNTER_ALL_TIME[COUNTERS]    = {1408.10, 816.10};           //начальные значения счётчиков
+float COUNTER_ALL_TIME[COUNTERS]    = {1408.10, 816.10};            //начальные значения счётчиков
 char* CounterName[COUNTERS]         = {"COLD", "HOT"};              //названия счётчиков
 
-#define Days_To_Remember           7                            //количество дней для отображения
-uint16_t Counter_Day[COUNTERS][Days_To_Remember];                        //массив со значениями за каждый день
+#define Days_To_Remember           7                                //количество дней для отображения
+uint16_t Counter_Day[COUNTERS][Days_To_Remember];                   //массив со значениями за каждый день
 
 uint8_t Today;                                                      //число сегодняшнего дня
 
-#define TARIFFS                3                             //количество тарифов
-float TARIFF[TARIFFS]          = {42.30, 198.19, 30.90};       //значения тарифов (холодная, горячая, водоотвод)
+#define TARIFFS                3                                    //количество тарифов
+float TARIFF[TARIFFS]          = {42.30, 198.19, 30.90};            //значения тарифов (холодная, горячая, водоотвод)
 char* TariffName[TARIFFS]      = {"TARIFF COLD", "TARIFF HOT", "TARIFF OUT"}; //названия тарифов
 
-boolean PIR_FLAG               = 1;                            //флаг включения экрана
-uint32_t PIR_TIMER             = millis();                     //стартовое время подсветки экрана
-uint32_t DISPALY_ON_TIME       = 30000;                        //время подсветки экрана
+boolean PIR_FLAG               = 1;                                 //флаг включения экрана
+uint32_t PIR_TIMER             = millis();                          //стартовое время подсветки экрана
+uint32_t DISPALY_ON_TIME       = 30000;                             //время подсветки экрана
 
-#define MODES                  3                            //количество MODES
-uint8_t SCREENS[3]             = {3, 5, 5};                    //количество SCREENS в каждом MODE
-uint8_t MODE                   = 0;                            //начальный MODE
-uint8_t SCREEN_NUMBER          = 0;                            //начальный SCREEN
+#define MODES                  3                                    //количество MODES
+uint8_t SCREENS[3]             = {3, 5, 5};                         //количество SCREENS в каждом MODE
+uint8_t MODE                   = 0;                                 //начальный MODE
+uint8_t SCREEN_NUMBER          = 0;                                 //начальный SCREEN
 
-uint32_t START_TIME            = 0;                            //стартовое время для аптайма
-boolean SETTING_MODE           = 0;                            //режим корректировки
+uint32_t START_TIME            = 0;                                 //стартовое время для аптайма
+boolean SETTING_MODE           = 0;                                 //режим корректировки
 
-uint32_t PLUS_MINUS_TIME       = 0;                            //стартовое время нажатия плюс/минуса
+uint32_t PLUS_MINUS_TIME       = 0;                                 //стартовое время нажатия плюс/минуса
 
 RTC_DS1307 rtc;
 DateTime start_time;
@@ -90,9 +91,9 @@ NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000);
 
 GButton button_cold(COLD_PIN);
 GButton button_hot(HOT_PIN);
-GButton button_select(SELECT_PIN, LOW_PULL, NORM_OPEN);
-GButton button_plus(PLUS_PIN, LOW_PULL, NORM_OPEN);
-GButton button_minus(MINUS_PIN, LOW_PULL, NORM_OPEN);
+GButton button_select(SELECT_PIN);
+GButton button_plus(PLUS_PIN);
+GButton button_minus(MINUS_PIN);
 
 void setup()
 
@@ -532,8 +533,8 @@ void SCREEN_4()
     case 1:
       display.setFont(ArialMT_Plain_16);
       display.setTextAlignment(TEXT_ALIGN_CENTER);
-      display.drawString(64 , 0, "ver. 0.1");
-      display.drawString(64 , 32, "2019 - 2021");
+      display.drawString(64 , 0, "ver. 1.0.0");
+      display.drawString(64 , 32, "2019 - 2022");
       break;
     case 2:
       display.setFont(ArialMT_Plain_16);
