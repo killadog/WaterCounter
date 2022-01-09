@@ -15,10 +15,9 @@
 - Установка значений счётчиков и тарифов.
 - Включение/отключения дисплея от датчика движения.
 - Вывод информации в Serial.
-- При подключении к Интернет:
-  - Синхронизация времени с NTP сервером; 
-  - Отправка данных на сервер [Blynk](https://blynk.io/);
-  - Отслеживание состояния на смартфоне в приложении Blynk ([iOS](https://apps.apple.com/us/app/blynk-iot-for-arduino-esp32/id808760481), [Android](https://play.google.com/store/apps/details?id=cc.blynk&hl=en_US)).
+- Синхронизация времени с NTP сервером. 
+- Отправка данных на сервер [Blynk](https://blynk.io/).
+- Отслеживание состояния на смартфоне в приложении Blynk ([iOS](https://apps.apple.com/us/app/blynk-iot-for-arduino-esp32/id808760481), [Android](https://play.google.com/store/apps/details?id=cc.blynk&hl=en_US)).
 
 ## Режимы экрана
 

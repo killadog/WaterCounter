@@ -4,7 +4,7 @@
   Компоненты:
   - Контроллер LOLIN D1 Mini V3.1.0
   - Дисплей OLED SSD1306 128x64
-  - Кнопки TTP223
+  - Кнопки
   - Пироэлектрический датчик движения PIR Motion Sensor
   - Часы реального времени RTC (Real Time Clock) DS1307
   - Код, схемы - https://github.com/killadog/WaterCounter
@@ -32,9 +32,10 @@
 
 #define BLYNK_PRINT Serial
 
-#include <ArduinoOTA.h>
+//#include <ArduinoOTA.h>
 #include <BlynkSimpleEsp8266.h>
 #include <ESP8266WiFi.h>
+#include <WiFiUdp.h>
 #include <RTClib.h>
 #include <SSD1306Wire.h>
 #include <NTPClient.h>
@@ -45,7 +46,7 @@ const char ssid[] = WIFI_SSID;     //Access point
 const char pass[] = WIFI_PASSWORD; //пароль
 const char auth[] = BLYNK_ID;      //Blynk ID
 
-#define SCL_PIN 5     //пин SCL           D1
+#define SCL_PIN 5     //пин SCL           D1 
 #define SDA_PIN 4     //пин SDA           D2
 #define COLD_PIN 2    //пин COLD          D4
 #define HOT_PIN 0     //пин HOT           D3
@@ -67,8 +68,8 @@ uint8_t Today; //число сегодняшнего дня
 float TARIFF[TARIFFS] = {42.30, 198.19, 30.90};                          //значения тарифов (холодная, горячая, водоотвод)
 char *TariffName[TARIFFS] = {"TARIFF COLD", "TARIFF HOT", "TARIFF OUT"}; //названия тарифов
 
-boolean PIR_FLAG = 1;             //флаг включенного экрана
-uint32_t PIR_TIMER = millis();    //стартовое время начала подсветки экрана
+boolean PIR_FLAG = 1;            //флаг включенного экрана
+uint32_t PIR_TIMER = millis();   //стартовое время начала подсветки экрана
 uint32_t DISPALY_ON_TIME = 30000; //длительность подсветки экрана в мс
 
 #define MODES 3                 //количество MODES
@@ -111,24 +112,21 @@ void setup()
   pinMode(SCL_PIN, INPUT_PULLUP);
   pinMode(PIR_PIN, INPUT);
 
-  pinMode(SELECT_PIN, INPUT_PULLUP);
-  pinMode(PLUS_PIN, INPUT_PULLUP);
-  pinMode(MINUS_PIN, INPUT_PULLUP);
   pinMode(COLD_PIN, INPUT_PULLUP);
   pinMode(HOT_PIN, INPUT_PULLUP);
 
-  //pinMode(SELECT_PIN, INPUT_PULLUP);
+  pinMode(SELECT_PIN, INPUT_PULLUP);
   button_select.setDebounce(80);      // настройка антидребезга (по умолчанию 80 мс)
   button_select.setTimeout(1000);     // настройка таймаута на удержание (по умолчанию 500 мс)
-  button_select.setClickTimeout(300); // настройка таймаута между кликами (по умолчанию 300 мс)
+  button_select.setClickTimeout(150); // настройка таймаута между кликами (по умолчанию 300 мс)
 
-  //pinMode(PLUS_PIN, INPUT_PULLUP);
+  pinMode(PLUS_PIN, INPUT_PULLUP);
   button_plus.setDebounce(80);      // настройка антидребезга (по умолчанию 80 мс)
   button_plus.setTimeout(500);      // настройка таймаута на удержание (по умолчанию 500 мс)
   button_plus.setClickTimeout(300); // настройка таймаута между кликами (по умолчанию 300 мс)
   button_plus.setStepTimeout(100);  // установка таймаута между инкрементами (по умолчанию 400 мс)
 
-  //pinMode(MINUS_PIN, INPUT_PULLUP);
+  pinMode(MINUS_PIN, INPUT_PULLUP);
   button_minus.setDebounce(80);      // настройка антидребезга (по умолчанию 80 мс)
   button_minus.setTimeout(500);      // настройка таймаута на удержание (по умолчанию 500 мс)
   button_minus.setClickTimeout(300); // настройка таймаута между кликами (по умолчанию 300 мс)
